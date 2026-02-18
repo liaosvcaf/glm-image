@@ -221,9 +221,19 @@ def generate_image_openrouter(
     }
     # Some models output both text+image, others image-only.
     # "image" modality is always required; include "text" for hybrid models.
+    #
+    # Margin guard: gpt-5-image-mini and similar models often place content at
+    # the very edge of the canvas, causing visible clipping. Appending an explicit
+    # instruction to leave inset padding reliably prevents this.
+    MARGIN_GUARD = (
+        " IMPORTANT: Leave at least 5% clear margin on ALL four edges of the image. "
+        "No text, labels, or diagram elements should be within 50px of any edge."
+    )
+    padded_prompt = prompt + MARGIN_GUARD
+
     body = {
         "model": model,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": [{"role": "user", "content": padded_prompt}],
         "modalities": ["image", "text"],
         "stream": False,
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.0] - 2026-02-18
+### Fixed
+- OpenRouter: append margin guard instruction to every prompt — prevents content clipping at canvas edges (gpt-5-image-mini places labels/text flush against the edge with no padding)
+
 ## [1.6.0] - 2026-02-18
 ### Fixed
 - OpenRouter response parsing: image URL was at `images[0]["image_url"]["url"]` (snake_case), not `imageUrl` (camelCase) — was crashing with KeyError on every generation
