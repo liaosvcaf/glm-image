@@ -11,26 +11,54 @@ Generate images from text prompts using the GLM-Image API.
 
 ## Usage
 
-When user provides an image generation prompt:
+When a user requests image generation:
 
-1. Run the generation script with the prompt
-2. Default size: 1088x1920 (portrait HD)
-3. Images save to `output/` folder automatically
-4. No watermark by default
-5. Return the image URL in markdown format
+**Step 1 — Ask for language (MANDATORY, no exceptions)**
+
+Before running anything, ask:
+
+> "What language is your prompt in? Please choose: zh (Chinese), en (English), ja (Japanese), ko (Korean), fr (French), de (German), es (Spanish)."
+
+Do NOT infer language from the user's message language or any other signal. Do NOT default to any language. Do NOT proceed until the user explicitly states a language code.
+
+**Step 2 — Run the generation script**
+
+```bash
+python3 scripts/generate.py "<prompt>" --language <code>
+```
+
+`--language` is required. The script will error if omitted.
+
+Other defaults:
+
+- Size: 1088x1920 (portrait HD)
+- Output: `output/` folder
+- No watermark
+
+**Step 3 — Return the result**
+
+Display the markdown image link and local file path.
 
 ## Generate Image
 
 ```bash
-python3 scripts/generate.py "<prompt>"
+python3 scripts/generate.py "<prompt>" --language <zh|en|ja|ko|fr|de|es>
 ```
 
 ### Options
 
+- `--language`: **(Required)** Prompt language. Must be explicitly provided by the user. Supported: `zh` (Chinese), `en` (English), `ja` (Japanese), `ko` (Korean), `fr` (French), `de` (German), `es` (Spanish)
 - `--size`: Image dimensions (default: 1088x1920). Valid range: 512-2048px, must be multiples of 32
 - `--output`: Custom output path (default: output/)
 - `--quality`: Image quality, "hd" or "standard" (default: hd)
 - `--watermark`: Enable watermark (disabled by default)
+
+### Language Selection Rules
+
+- **Always ask explicitly.** Never guess from the user's message language.
+- **Never default.** If the user does not specify, ask again.
+- **Record as-typed.** Pass exactly what the user said (e.g., `zh`, `en`) — do not normalize.
+- Reason: GLM is a Chinese-native model; prompt language significantly affects output quality and style.
 
 ### Available Sizes
 

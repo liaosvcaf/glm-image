@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0] - 2026-02-18
+### Added
+- Explicit language selection: `--language` flag (required) on `generate.py`
+- Supported languages: zh, en, ja, ko, fr, de, es
+- SKILL.md mandates asking the user for language choice before every generation — no defaulting, no inferring
+- Language label printed in script output
+
 ## [1.1.0] - 2026-02-17
 ### Added
 - skill.yml with display_name, attribution, triggers, permissions

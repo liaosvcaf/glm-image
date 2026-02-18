@@ -114,6 +114,17 @@ def generate_image(
     }
 
 
+SUPPORTED_LANGUAGES = {
+    "zh": "Chinese",
+    "en": "English",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "fr": "French",
+    "de": "German",
+    "es": "Spanish",
+}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate image from prompt")
     parser.add_argument("prompt", help="Image description")
@@ -121,6 +132,15 @@ def main():
     parser.add_argument("--quality", default="hd", help="Image quality (default: hd)")
     parser.add_argument("--output", default="output", help="Output directory (default: output)")
     parser.add_argument("--watermark", action="store_true", help="Enable watermark (disabled by default)")
+    parser.add_argument(
+        "--language",
+        required=True,
+        choices=list(SUPPORTED_LANGUAGES.keys()),
+        help=(
+            "Prompt language (REQUIRED). Supported: "
+            + ", ".join(f"{k} ({v})" for k, v in SUPPORTED_LANGUAGES.items())
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -133,6 +153,8 @@ def main():
             output_dir=args.output
         )
 
+        lang_label = SUPPORTED_LANGUAGES.get(args.language, args.language)
+        print(f"Language: {lang_label} ({args.language})")
         print(f"Image saved: {result['local_path']}")
         print(f"\nMarkdown URL:\n![{result['prompt']}]({result['url']})")
         print(f"\nLocal path: {result['local_path']}")
