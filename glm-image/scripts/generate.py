@@ -21,7 +21,7 @@ def load_api_key() -> str:
         return api_key
 
     # Try config.json in current directory
-    config_paths = ["config.json", os.path.expanduser("~/.claude/config.json")]
+    config_paths = ["config.json", os.path.expanduser("~/.openclaw/config.json"), os.path.expanduser("~/.claude/config.json")]
     for path in config_paths:
         if os.path.exists(path):
             try:
