@@ -11,71 +11,81 @@ Generate images from text prompts using the GLM-Image API.
 
 ## Setup
 
-This skill requires a GLM API key from [BigModel / Zhipu AI](https://open.bigmodel.cn).
+This skill supports two providers. **You only need one.**
 
-The script looks for the key in this order:
+### Option A — GLM (BigModel / Zhipu AI)
 
-1. `GLM_API_KEY` environment variable
-2. `~/.openclaw/config.json` → `"api_key"` field
-3. `~/.claude/config.json` → `"api_key"` field
-4. `.env` file in the skill directory or working directory → `GLM_API_KEY=<value>`
+Requires `GLM_API_KEY` from https://open.bigmodel.cn → Console → API Keys
 
-**Recommended:** set it as an environment variable or add to `~/.openclaw/config.json`:
-
-```json
-{
-  "api_key": "your-glm-api-key-here"
-}
+```bash
+export GLM_API_KEY=your-key
+# or add to ~/.openclaw/config.json: { "api_key": "your-key" }
+# or add GLM_API_KEY=your-key to .env
 ```
 
-Get your key at: https://open.bigmodel.cn → Console → API Keys
+### Option B — OpenRouter
+
+Requires `OPENROUTER_API_KEY` from https://openrouter.ai → Keys
+
+```bash
+export OPENROUTER_API_KEY=your-key
+# or add to ~/.openclaw/config.json: { "openrouter_api_key": "your-key" }
+# or add OPENROUTER_API_KEY=your-key to .env
+```
+
+OpenRouter image models include: `google/gemini-2.5-flash-image-preview`, `openai/gpt-5-image`, `openai/gpt-5-image-mini`.
+See full list at https://openrouter.ai/collections/image-models
+
+**Auto-detection:** if both keys are present, GLM is used. Override with `--provider openrouter`.
 
 ## Usage
 
 When a user requests image generation:
 
-**Step 0 — Verify API key is configured**
+**Step 0 — Verify at least one API key is configured**
 
-Run a quick check to confirm the key is present before doing anything else:
+Run:
 
 ```bash
 python3 -c "
-import os, json
-found = bool(os.environ.get('GLM_API_KEY'))
-if not found:
-    import pathlib
+import os, json, pathlib
+glm = bool(os.environ.get('GLM_API_KEY'))
+orouter = bool(os.environ.get('OPENROUTER_API_KEY'))
+if not glm and not orouter:
     for p in ['~/.openclaw/config.json', '~/.claude/config.json']:
         try:
             d = json.loads(pathlib.Path(p).expanduser().read_text())
-            if d.get('api_key'):
-                found = True; break
+            if d.get('api_key'): glm = True
+            if d.get('openrouter_api_key'): orouter = True
         except: pass
-print('KEY_FOUND' if found else 'KEY_MISSING')
+keys = []
+if glm: keys.append('GLM_API_KEY')
+if orouter: keys.append('OPENROUTER_API_KEY')
+print('FOUND: ' + ', '.join(keys) if keys else 'KEY_MISSING')
 "
 ```
 
 If output is `KEY_MISSING`, tell the user:
 
-> "GLM_API_KEY is not configured. To use this skill, get your API key from https://open.bigmodel.cn (Console → API Keys), then set it one of these ways:
+> "No API key is configured. This skill supports two providers — you only need one:
 >
-> **Option A — environment variable (recommended):**
+> **Option A — GLM (BigModel):** Get key at https://open.bigmodel.cn → Console → API Keys, then:
 > ```
-> export GLM_API_KEY=your-key-here
+> export GLM_API_KEY=your-key
 > ```
 >
-> **Option B — config file:**
-> Create or edit `~/.openclaw/config.json` and add:
+> **Option B — OpenRouter:** Get key at https://openrouter.ai → Keys, then:
+> ```
+> export OPENROUTER_API_KEY=your-key
+> ```
+>
+> For either option you can also add the key to `~/.openclaw/config.json`:
 > ```json
-> { "api_key": "your-key-here" }
-> ```
->
-> **Option C — .env file:**
-> Create a `.env` file in the skill directory with:
-> ```
-> GLM_API_KEY=your-key-here
+> { "api_key": "glm-key" }
+> { "openrouter_api_key": "openrouter-key" }
 > ```"
 
-Do not proceed until the user confirms the key is set.
+Do not proceed until the user confirms a key is set.
 
 **Step 1 — Ask for language (MANDATORY, no exceptions)**
 
@@ -109,13 +119,25 @@ Display the markdown image link and local file path.
 python3 scripts/generate.py "<prompt>" --language <zh|en|ja|ko|fr|de|es>
 ```
 
+Provider is auto-detected from available keys. Override explicitly:
+
+```bash
+# Force OpenRouter with a specific model
+python3 scripts/generate.py "<prompt>" --language en --provider openrouter --model google/gemini-2.5-flash-image-preview
+
+# Force GLM
+python3 scripts/generate.py "<prompt>" --language zh --provider glm
+```
+
 ### Options
 
 - `--language`: **(Required)** Prompt language. Must be explicitly provided by the user. Supported: `zh` (Chinese), `en` (English), `ja` (Japanese), `ko` (Korean), `fr` (French), `de` (German), `es` (Spanish)
-- `--size`: Image dimensions (default: 1088x1920). Valid range: 512-2048px, must be multiples of 32
-- `--output`: Custom output path (default: output/)
-- `--quality`: Image quality, "hd" or "standard" (default: hd)
-- `--watermark`: Enable watermark (disabled by default)
+- `--provider`: `glm` or `openrouter`. Auto-detected if omitted (GLM preferred when both keys present)
+- `--model`: OpenRouter model slug (default: `google/gemini-2.5-flash-image-preview`). Ignored for GLM. See https://openrouter.ai/collections/image-models
+- `--size`: Image dimensions, GLM only (default: 1088x1920). Valid range: 512-2048px, multiples of 32
+- `--output`: Output directory (default: output/)
+- `--quality`: Image quality, GLM only — "hd" or "standard" (default: hd)
+- `--watermark`: Enable watermark, GLM only
 
 ### Language Selection Rules
 

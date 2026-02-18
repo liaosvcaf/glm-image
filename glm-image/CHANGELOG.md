@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0] - 2026-02-18
+### Added
+- OpenRouter provider support: `--provider openrouter` uses `/api/v1/chat/completions`
+  with `modalities: ["image"]`; returns base64 image decoded and saved locally
+- `--provider` flag: auto-detects from available keys (GLM preferred); explicit override available
+- `--model` flag: choose OpenRouter image model (default: google/gemini-2.5-flash-image-preview)
+- `OPENROUTER_API_KEY` lookup in env, config.json (`openrouter_api_key`), and .env
+- Setup section updated: two-provider docs with key registration links
+- Step 0 now checks for either key; tells user both setup options if neither found
+
 ## [1.3.0] - 2026-02-18
 ### Added
 - Setup section: documents all 4 key lookup locations with examples (env var, config.json, .env)
