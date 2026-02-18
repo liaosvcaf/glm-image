@@ -10,7 +10,7 @@ Generate images from text prompts using [GLM-Image](https://open.bigmodel.cn) (Z
 
 Generated with `google/gemini-3-pro-image-preview` via OpenRouter:
 
-![Multi-agent scrapbook illustration](samples/multi-agent-scrapbook-zh.png)
+![Multi-agent scrapbook illustration](samples/multi-agent-scrapbook-zh.jpg)
 
 ## Setup
 
