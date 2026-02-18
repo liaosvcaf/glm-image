@@ -32,7 +32,13 @@ SUPPORTED_LANGUAGES = {
 }
 
 # Default OpenRouter image model. Override with --model.
-OPENROUTER_DEFAULT_MODEL = "google/gemini-2.5-flash-image-preview"
+# gpt-5-image-mini: best text rendering on OpenRouter after GLM, reasonable cost
+OPENROUTER_DEFAULT_MODEL = "openai/gpt-5-image-mini"
+
+# GLM-Image known pricing (source: BigModel API docs, as of Jan 2026)
+GLM_PRICE_STANDARD_CNY = 0.10   # ¥ per image
+GLM_PRICE_HD_CNY       = 0.20   # ¥ per image (HD quality)
+CNY_TO_USD             = 0.138  # approximate; fluctuates
 
 
 # ---------------------------------------------------------------------------
@@ -81,6 +87,32 @@ def _load_key_from_env_and_configs(env_var: str, config_key: str) -> str | None:
                 pass
 
     return None
+
+
+# ---------------------------------------------------------------------------
+# Cost helpers
+# ---------------------------------------------------------------------------
+
+def fetch_openrouter_cost(generation_id: str, api_key: str) -> float | None:
+    """
+    Query OpenRouter's /api/v1/generation endpoint for actual cost in USD.
+    Returns None if the endpoint fails (non-fatal).
+    """
+    try:
+        url = f"https://openrouter.ai/api/v1/generation?id={generation_id}"
+        headers = {"Authorization": f"Bearer {api_key}"}
+        resp = requests.get(url, headers=headers, timeout=15)
+        resp.raise_for_status()
+        return resp.json().get("data", {}).get("total_cost")
+    except Exception:
+        return None
+
+
+def glm_cost_str(quality: str) -> str:
+    """Return formatted cost string for a GLM image generation."""
+    cny = GLM_PRICE_HD_CNY if quality == "hd" else GLM_PRICE_STANDARD_CNY
+    usd = cny * CNY_TO_USD
+    return f"¥{cny:.2f} (~${usd:.4f}) — verify at https://open.bigmodel.cn/console"
 
 
 def load_glm_key() -> str:
@@ -169,7 +201,7 @@ def generate_image_glm(
     with open(filepath, "wb") as f:
         f.write(img_response.content)
 
-    return {"url": image_url, "local_path": filepath, "prompt": prompt}
+    return {"url": image_url, "local_path": filepath, "prompt": prompt, "quality": quality}
 
 
 # ---------------------------------------------------------------------------
@@ -212,6 +244,7 @@ def generate_image_openrouter(
             f"Try: google/gemini-2.5-flash-image-preview or openai/gpt-5-image"
         )
 
+    generation_id = data.get("id")
     image_data_url = images[0]["imageUrl"]["url"]  # "data:image/png;base64,..."
 
     os.makedirs(output_dir, exist_ok=True)
@@ -224,7 +257,12 @@ def generate_image_openrouter(
     with open(filepath, "wb") as f:
         f.write(base64.b64decode(b64_data))
 
-    return {"url": image_data_url, "local_path": filepath, "prompt": prompt}
+    return {
+        "url": image_data_url,
+        "local_path": filepath,
+        "prompt": prompt,
+        "generation_id": generation_id,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -292,6 +330,18 @@ def main():
         print(f"Image saved: {result['local_path']}")
         print(f"\nMarkdown URL:\n![{result['prompt']}]({result['url']})")
         print(f"\nLocal path: {result['local_path']}")
+
+        # Cost reporting
+        if provider == "glm":
+            print(f"\nCost: {glm_cost_str(result.get('quality', args.quality))}")
+        else:
+            gen_id = result.get("generation_id")
+            if gen_id:
+                cost = fetch_openrouter_cost(gen_id, load_openrouter_key())
+                if cost is not None:
+                    print(f"\nCost: ${cost:.6f} USD")
+                else:
+                    print(f"\nCost: unavailable — check https://openrouter.ai/activity")
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)

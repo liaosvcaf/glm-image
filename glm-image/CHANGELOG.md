@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.5.0] - 2026-02-18
+### Added
+- Cost display at end of every run:
+  - GLM: shows ¥ and ~$ from known pricing (¥0.10 standard / ¥0.20 HD) with console link
+  - OpenRouter: fetches actual USD cost from `/api/v1/generation?id=<id>` endpoint; falls back to activity link
+### Changed
+- Default OpenRouter model: `google/gemini-2.5-flash-image-preview` → `openai/gpt-5-image-mini`
+  (better text rendering for scrapbook-style prompts)
+
 ## [1.4.0] - 2026-02-18
 ### Added
 - OpenRouter provider support: `--provider openrouter` uses `/api/v1/chat/completions`
