@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.3.0] - 2026-02-18
+### Added
+- Setup section: documents all 4 key lookup locations with examples (env var, config.json, .env)
+- Step 0 in Usage: agent checks for KEY_MISSING before proceeding, then tells user exactly how to configure in plain language (3 options with code examples)
+
 ## [1.2.0] - 2026-02-18
 ### Added
 - Explicit language selection: `--language` flag (required) on `generate.py`

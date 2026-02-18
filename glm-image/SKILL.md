@@ -9,9 +9,73 @@ Generate images from text prompts using the GLM-Image API.
 
 > **Attribution:** Based on [glm-image](https://github.com/ViffyGwaanl/glm-image) by ViffyGwaanl (MIT License).
 
+## Setup
+
+This skill requires a GLM API key from [BigModel / Zhipu AI](https://open.bigmodel.cn).
+
+The script looks for the key in this order:
+
+1. `GLM_API_KEY` environment variable
+2. `~/.openclaw/config.json` → `"api_key"` field
+3. `~/.claude/config.json` → `"api_key"` field
+4. `.env` file in the skill directory or working directory → `GLM_API_KEY=<value>`
+
+**Recommended:** set it as an environment variable or add to `~/.openclaw/config.json`:
+
+```json
+{
+  "api_key": "your-glm-api-key-here"
+}
+```
+
+Get your key at: https://open.bigmodel.cn → Console → API Keys
+
 ## Usage
 
 When a user requests image generation:
+
+**Step 0 — Verify API key is configured**
+
+Run a quick check to confirm the key is present before doing anything else:
+
+```bash
+python3 -c "
+import os, json
+found = bool(os.environ.get('GLM_API_KEY'))
+if not found:
+    import pathlib
+    for p in ['~/.openclaw/config.json', '~/.claude/config.json']:
+        try:
+            d = json.loads(pathlib.Path(p).expanduser().read_text())
+            if d.get('api_key'):
+                found = True; break
+        except: pass
+print('KEY_FOUND' if found else 'KEY_MISSING')
+"
+```
+
+If output is `KEY_MISSING`, tell the user:
+
+> "GLM_API_KEY is not configured. To use this skill, get your API key from https://open.bigmodel.cn (Console → API Keys), then set it one of these ways:
+>
+> **Option A — environment variable (recommended):**
+> ```
+> export GLM_API_KEY=your-key-here
+> ```
+>
+> **Option B — config file:**
+> Create or edit `~/.openclaw/config.json` and add:
+> ```json
+> { "api_key": "your-key-here" }
+> ```
+>
+> **Option C — .env file:**
+> Create a `.env` file in the skill directory with:
+> ```
+> GLM_API_KEY=your-key-here
+> ```"
+
+Do not proceed until the user confirms the key is set.
 
 **Step 1 — Ask for language (MANDATORY, no exceptions)**
 
@@ -76,15 +140,6 @@ After successful generation, display:
 1. Local file path: `output/<timestamp>_<prompt>.png`
 2. Markdown image link: `![<prompt>](<url>)`
 
-## Configuration
-
-Set GLM_API_KEY in TOOLS.md or as environment variable. Never hardcode in skill files.
-
-Required entries in TOOLS.md:
-- **GLM_API_KEY**: Your BigModel API key (https://open.bigmodel.cn)
-
-The script also reads from `config.json` or `.env` file as fallback.
-
 ## Agent Owner
 
 This skill is executed by the main OpenClaw agent session. The `generate.py` script
@@ -109,4 +164,5 @@ Failure conditions: invalid API key, unsupported size, network timeout (120s), A
 
 ## Requirements
 
-- GLM_API_KEY environment variable or config.json with api_key
+- GLM API key configured (see Setup section above)
+- Python 3 with `requests` package (`pip install requests`)
