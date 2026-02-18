@@ -226,8 +226,11 @@ def generate_image_openrouter(
     # the very edge of the canvas, causing visible clipping. Appending an explicit
     # instruction to leave inset padding reliably prevents this.
     MARGIN_GUARD = (
-        " IMPORTANT: Leave at least 5% clear margin on ALL four edges of the image. "
-        "No text, labels, or diagram elements should be within 50px of any edge."
+        " CRITICAL LAYOUT REQUIREMENT: The entire diagram including ALL text labels, "
+        "titles, and legend items MUST fit fully within the CENTER 80% of the canvas. "
+        "Leave 10% empty space as a clear border on ALL four sides (top, bottom, left, right). "
+        "Do NOT place any text, title, label, or element within the outer 10% border region. "
+        "Nothing should be cut off or near the edge."
     )
     padded_prompt = prompt + MARGIN_GUARD
 

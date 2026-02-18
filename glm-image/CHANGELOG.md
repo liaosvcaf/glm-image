@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.0] - 2026-02-18
+### Changed
+- OpenRouter margin guard strengthened: from "5% margin / 50px" to "center 80% constraint with 10% empty border on all four sides" — more explicit instruction to prevent edge clipping on gpt-5-image-mini
+
 ## [1.7.0] - 2026-02-18
 ### Fixed
 - OpenRouter: append margin guard instruction to every prompt — prevents content clipping at canvas edges (gpt-5-image-mini places labels/text flush against the edge with no padding)
