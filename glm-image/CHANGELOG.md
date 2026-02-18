@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.0] - 2026-02-18
+### Fixed
+- OpenRouter response parsing: image URL was at `images[0]["image_url"]["url"]` (snake_case), not `imageUrl` (camelCase) — was crashing with KeyError on every generation
+- Cost extraction: moved to `usage.cost` from main response body (immediate, no extra API call); generation endpoint kept as fallback only
+
 ## [1.5.0] - 2026-02-18
 ### Added
 - Cost display at end of every run:

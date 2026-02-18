@@ -95,8 +95,8 @@ def _load_key_from_env_and_configs(env_var: str, config_key: str) -> str | None:
 
 def fetch_openrouter_cost(generation_id: str, api_key: str) -> float | None:
     """
-    Query OpenRouter's /api/v1/generation endpoint for actual cost in USD.
-    Returns None if the endpoint fails (non-fatal).
+    Fallback: query OpenRouter's /api/v1/generation endpoint for cost in USD.
+    Only used when cost wasn't in the main response's usage field.
     """
     try:
         url = f"https://openrouter.ai/api/v1/generation?id={generation_id}"
@@ -245,7 +245,10 @@ def generate_image_openrouter(
         )
 
     generation_id = data.get("id")
-    image_data_url = images[0]["imageUrl"]["url"]  # "data:image/png;base64,..."
+    # Cost is available directly in usage.cost (USD)
+    usage_cost = data.get("usage", {}).get("cost")
+
+    image_data_url = images[0]["image_url"]["url"]  # "data:image/png;base64,..."
 
     os.makedirs(output_dir, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -262,6 +265,7 @@ def generate_image_openrouter(
         "local_path": filepath,
         "prompt": prompt,
         "generation_id": generation_id,
+        "usage_cost": usage_cost,
     }
 
 
@@ -335,13 +339,16 @@ def main():
         if provider == "glm":
             print(f"\nCost: {glm_cost_str(result.get('quality', args.quality))}")
         else:
-            gen_id = result.get("generation_id")
-            if gen_id:
-                cost = fetch_openrouter_cost(gen_id, load_openrouter_key())
-                if cost is not None:
-                    print(f"\nCost: ${cost:.6f} USD")
-                else:
-                    print(f"\nCost: unavailable — check https://openrouter.ai/activity")
+            cost = result.get("usage_cost")
+            if cost is None:
+                # fallback: query generation endpoint
+                gen_id = result.get("generation_id")
+                if gen_id:
+                    cost = fetch_openrouter_cost(gen_id, load_openrouter_key())
+            if cost is not None:
+                print(f"\nCost: ${cost:.6f} USD")
+            else:
+                print(f"\nCost: unavailable — check https://openrouter.ai/activity")
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
