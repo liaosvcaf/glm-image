@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.0] - 2026-02-18
+### Changed
+- Default OpenRouter model changed from `openai/gpt-5-image-mini` to `google/gemini-3-pro-image-preview` — better fallback when GLM API not present
+- Margin guard relaxed: no longer mandates exact 80%/10% constraints; gives the model flexibility on dimensions while keeping comfortable margins
+- Vertical layout recommended but not forced — long content benefits from tall format
+
 ## [1.8.0] - 2026-02-18
 ### Changed
 - OpenRouter margin guard strengthened: from "5% margin / 50px" to "center 80% constraint with 10% empty border on all four sides" — more explicit instruction to prevent edge clipping on gpt-5-image-mini

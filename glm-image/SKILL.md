@@ -33,7 +33,7 @@ export OPENROUTER_API_KEY=your-key
 # or add OPENROUTER_API_KEY=your-key to .env
 ```
 
-Default OpenRouter model: `openai/gpt-5-image-mini` (best text rendering at reasonable cost). Other options: `openai/gpt-5-image`, `google/gemini-2.5-flash-image-preview`.
+Default OpenRouter model: `google/gemini-3-pro-image-preview`. Other options: `openai/gpt-5-image-mini`, `openai/gpt-5-image`, `google/gemini-2.5-flash-image-preview`.
 See full list at https://openrouter.ai/collections/image-models
 
 **Auto-detection:** if both keys are present, GLM is used. Override with `--provider openrouter`.
@@ -133,7 +133,7 @@ python3 scripts/generate.py "<prompt>" --language zh --provider glm
 
 - `--language`: **(Required)** Prompt language. Must be explicitly provided by the user. Supported: `zh` (Chinese), `en` (English), `ja` (Japanese), `ko` (Korean), `fr` (French), `de` (German), `es` (Spanish)
 - `--provider`: `glm` or `openrouter`. Auto-detected if omitted (GLM preferred when both keys present)
-- `--model`: OpenRouter model slug (default: `openai/gpt-5-image-mini`). Ignored for GLM. See https://openrouter.ai/collections/image-models
+- `--model`: OpenRouter model slug (default: `google/gemini-3-pro-image-preview`). Ignored for GLM. See https://openrouter.ai/collections/image-models
 - `--size`: Image dimensions, GLM only (default: 1088x1920). Valid range: 512-2048px, multiples of 32
 - `--output`: Output directory (default: output/)
 - `--quality`: Image quality, GLM only — "hd" or "standard" (default: hd)

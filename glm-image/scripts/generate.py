@@ -32,8 +32,8 @@ SUPPORTED_LANGUAGES = {
 }
 
 # Default OpenRouter image model. Override with --model.
-# gpt-5-image-mini: best text rendering on OpenRouter after GLM, reasonable cost
-OPENROUTER_DEFAULT_MODEL = "openai/gpt-5-image-mini"
+# gemini-3-pro: strong image generation with good text rendering
+OPENROUTER_DEFAULT_MODEL = "google/gemini-3-pro-image-preview"
 
 # GLM-Image known pricing (source: BigModel API docs, as of Jan 2026)
 GLM_PRICE_STANDARD_CNY = 0.10   # ¥ per image
@@ -226,11 +226,9 @@ def generate_image_openrouter(
     # the very edge of the canvas, causing visible clipping. Appending an explicit
     # instruction to leave inset padding reliably prevents this.
     MARGIN_GUARD = (
-        " CRITICAL LAYOUT REQUIREMENT: The entire diagram including ALL text labels, "
-        "titles, and legend items MUST fit fully within the CENTER 80% of the canvas. "
-        "Leave 10% empty space as a clear border on ALL four sides (top, bottom, left, right). "
-        "Do NOT place any text, title, label, or element within the outer 10% border region. "
-        "Nothing should be cut off or near the edge."
+        " LAYOUT: Leave comfortable margins on all four sides so nothing is cut off or "
+        "near the edge. Prefer a tall vertical layout for long content. The model may "
+        "choose appropriate dimensions — vertical orientation is recommended but not mandatory."
     )
     padded_prompt = prompt + MARGIN_GUARD
 
@@ -254,7 +252,7 @@ def generate_image_openrouter(
     if not images:
         raise RuntimeError(
             f"No image in OpenRouter response. Model '{model}' may not support image output.\n"
-            f"Try: google/gemini-2.5-flash-image-preview or openai/gpt-5-image"
+            f"Try: google/gemini-3-pro-image-preview or openai/gpt-5-image-mini"
         )
 
     generation_id = data.get("id")
