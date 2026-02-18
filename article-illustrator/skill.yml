@@ -1,0 +1,24 @@
+name: article-illustrator
+display_name: "Article Illustrator"
+version: 1.0.0
+description: >
+  Generate beautiful hand-crafted scrapbook-style illustrations for any article.
+  Works for blog posts, essays, newsletters, tutorials, research summaries, or any
+  written content. Visual style: torn paper, washi tape, hand-drawn elements,
+  layered mixed-media textures.
+attribution:
+  source: https://github.com/ViffyGwaanl/glm-image
+  author: ViffyGwaanl
+  license: MIT
+permissions:
+  - exec
+  - read
+triggers:
+  - illustrate this article
+  - illustrate this post
+  - add images to this article
+  - add images to this post
+  - generate pictures for this
+  - make this article more visual
+  - create illustrations for
+  - scrapbook style illustrations

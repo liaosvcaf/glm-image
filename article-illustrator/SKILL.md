@@ -1,11 +1,17 @@
 ---
 name: article-illustrator
-description: Generate illustrations for articles using scrapbook style. Use when the user wants to add images to an article, create illustrated content, or requests "illustrate this article", "add images to this article", "generate pictures for this post".
+description: >
+  Generate beautiful hand-crafted scrapbook-style illustrations for any article —
+  blog posts, essays, newsletters, tutorials, or research summaries.
+  Use when the user wants to illustrate an article, add images to written content,
+  or requests: "illustrate this article", "add images to this post",
+  "generate pictures for this piece", "make this article more visual".
 ---
 
 # Article Illustrator
 
-Transform articles into illustrated markdown with hand-crafted scrapbook style images.
+Transform any article into illustrated markdown with hand-crafted **scrapbook-style** images —
+torn paper edges, washi tape, hand-drawn arrows, layered textures. Works for any written content.
 
 ## Workflow
 
