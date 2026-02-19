@@ -1,5 +1,28 @@
 {
-  "stage": "test",
-  "version": "1.1.0",
-  "attribution": "https://github.com/ViffyGwaanl/glm-image"
+  "_generated": "Auto-generated from root STATUS.json. Do not edit manually.",
+  "skill": "glm-image",
+  "id": "AT",
+  "stage": "released",
+  "auditScore": null,
+  "auditDate": null,
+  "competitivePosition": "novel",
+  "competitiveAction": "expand",
+  "tier": "generic",
+  "priority": "medium",
+  "lastRefactored": "2026-02-18",
+  "testsPassing": true,
+  "opsecClean": true,
+  "notes": "Forked from ViffyGwaanl/glm-image. GLM + OpenRouter dual provider. v1.9.0: gemini-3-pro default, relaxed margins, cost display, language flag. Published via curl workaround 2026-02-19.",
+  "released": true,
+  "compositionRole": "standalone",
+  "githubRepo": "liaosvcaf/glm-image",
+  "repoVersion": "1.9.0",
+  "attribution": {
+    "source": "https://github.com/ViffyGwaanl/glm-image",
+    "author": "ViffyGwaanl",
+    "license": "MIT"
+  },
+  "clawhubSlug": "glm-image",
+  "clawhub": "https://clawhub.ai/chunhualiao/glm-image",
+  "clawhubVersion": "1.9.0"
 }
